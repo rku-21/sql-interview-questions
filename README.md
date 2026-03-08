@@ -1,302 +1,378 @@
 # 100 Must-Know SQL Interview Questions in 2026
 
-<div>
-<p align="center">
-<a href="https://devinterview.io/questions/web-and-mobile-development/">
-<img src="https://firebasestorage.googleapis.com/v0/b/dev-stack-app.appspot.com/o/github-blog-img%2Fweb-and-mobile-development-github-img.jpg?alt=media&token=1b5eeecc-c9fb-49f5-9e03-50cf2e309555" alt="web-and-mobile-development" width="100%">
-</a>
-</p>
+# SQL Interview Guide - Concise Version
 
-#### You can also find all 100 answers here 👉 [Devinterview.io - SQL](https://devinterview.io/questions/web-and-mobile-development/sql-interview-questions)
+## 1. What is SQL?
 
-<br>
+**SQL** = Structured Query Language. It's used to talk to databases - to get data, add data, change data, and delete data.
 
-## 1. What is _SQL_ and what is it used for?
+### Main Parts of SQL:
+- **DDL** - Create/modify tables (CREATE, ALTER, DROP)
+- **DML** - Add/change/delete data (INSERT, UPDATE, DELETE)
+- **DQL** - Get data from database (SELECT)
+- **DCL** - Control who can access what (GRANT, REVOKE)
 
-**SQL** (**Structured Query Language**) is a domain-specific, declarative programming language designed for managing relational databases. It is the primary language for tasks like data retrieval, data manipulation, and database administration.
+### What You Do with SQL:
+- Retrieve data
+- Add new records
+- Update existing records
+- Delete records
+- Create tables
+- Set data rules and constraints
 
-### Core Components
+---
 
-- **DDL** (Data Definition Language): Used for defining and modifying the structure of the database.
-- **DML** (Data Manipulation Language): Deals with adding, modifying, and removing data in the database.
-- **DCL** (Data Control Language): Manages the permissions and access rights of the database.
-- **TCL** (Transaction Control Language): Governs the transactional management of the database, such as commits or rollbacks.
+## 2. SQL vs NoSQL
 
-### Common Database Management Tasks
+| Feature | SQL | NoSQL |
+|---------|-----|-------|
+| **Data Type** | Structured data (tables) | Unstructured data (flexible) |
+| **Schema** | Fixed schema | No fixed schema |
+| **Query Language** | SQL | Different APIs (varies) |
+| **Consistency** | Strong (ACID) | Eventual consistency |
+| **Scaling** | Vertical (bigger servers) | Horizontal (more servers) |
+| **Examples** | MySQL, PostgreSQL | MongoDB, Redis, Cassandra |
 
-**Data Retrieval and Reporting**: Retrieve and analyze data, generate reports, and build dashboards.
+### When to Use:
+- **SQL**: Banking, business apps, data with relationships
+- **NoSQL**: Big data, real-time apps, flexible data
 
-**Data Manipulation**: Insert, update, or delete records from tables. Powerful features like Joins and Subqueries enable complex operations.
+---
 
-**Data Integrity**: Ensure data conform to predefined rules. Techniques like foreign keys, constraints, and triggers help maintain the integrity of the data.
+## 3. Main SQL Commands
 
-**Data Security**: Manage user access permissions and roles.
-
-**Data Consistency**: Enforce ACID properties (Atomicity, Consistency, Isolation, Durability) in database transactions.
-
-**Data Backups and Recovery**: Perform database backups and ensure data is restorable in case of loss.
-
-**Data Normalization**: Design databases for efficient storage and reduce data redundancy.
-
-**Indices and Performance Tuning**: Optimize queries for faster data retrieval.
-
-**Replication and Sharding**: Advanced techniques for distributed systems.
-
-### Basic SQL Commands
-
-- **CREATE DATABASE**: Used to create a new database.
-- **CREATE TABLE**: Defines a new table.
-- **INSERT INTO**: Adds a new record into a table.
-- **SELECT**: Retrieves data from one or more tables.
-- **UPDATE**: Modifies existing records.
-- **DELETE**: Removes records from a table.
-- **ALTER TABLE**: Modifies an existing table (e.g., adds a new column, renames an existing column, etc.).
-- **DROP TABLE**: Deletes a table (along with its data) from the database.
-- **INDEX**: Adds an index to a table for better performance.
-- **VIEW**: Creates a virtual table that can be used for data retrieval.
-- **TRIGGER**: Triggers a specified action when a database event occurs.
-- **PROCEDURE** and **FUNCTION**: Store database logic for reuse and to simplify complex operations.
-
-### Code Example: Basic SQL Queries
-
-Here is the SQL code:
-
+### Data Retrieval (DQL)
 ```sql
--- Create a database
-CREATE DATABASE Company;
+SELECT * FROM table_name;
+SELECT column1, column2 FROM table WHERE condition;
+```
 
--- Use Company database
-USE Company;
-
--- Create tables
-CREATE TABLE Department (
-    DeptID INT PRIMARY KEY AUTO_INCREMENT,
-    DeptName VARCHAR(50) NOT NULL
-);
-
+### Create (DDL)
+```sql
 CREATE TABLE Employee (
-    EmpID INT PRIMARY KEY AUTO_INCREMENT,
-    EmpName VARCHAR(100) NOT NULL,
-    EmpDeptID INT,
-    FOREIGN KEY (EmpDeptID) REFERENCES Department(DeptID)
+    ID INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Age INT
 );
-
--- Insert data
-INSERT INTO Department (DeptName) VALUES ('Engineering');
-INSERT INTO Department (DeptName) VALUES ('Sales');
-
-INSERT INTO Employee (EmpName, EmpDeptID) VALUES ('John Doe', 1);
-INSERT INTO Employee (EmpName, EmpDeptID) VALUES ('Jane Smith', 2);
-
--- Select data from database
-SELECT * FROM Department;
-SELECT * FROM Employee;
-
--- Perform an inner join to combine data from two tables
-SELECT Employee.EmpID, Employee.EmpName, Department.DeptName
-FROM Employee
-JOIN Department ON Employee.EmpDeptID = Department.DeptID;
 ```
-<br>
 
-## 2. Describe the difference between _SQL_ and _NoSQL_ databases.
+### Insert (DML)
+```sql
+INSERT INTO Employee VALUES (1, 'John', 25);
+```
 
-**SQL** and **NoSQL** databases offer different paradigms, each designed to suit various types of data and data handling.
+### Update (DML)
+```sql
+UPDATE Employee SET Age = 26 WHERE ID = 1;
+```
 
-### Top-Level Differences
+### Delete (DML)
+```sql
+DELETE FROM Employee WHERE ID = 1;
+```
 
-- **SQL**: Primarily designed for structured (structured, semi-structured) data — data conforming to a predefined schema.
-- **NoSQL**: Suited for unstructured or semi-structured data that evolves gradually, thereby supporting flexible schemas.
+### Drop Table (DDL)
+```sql
+DROP TABLE Employee;
+```
 
-- **SQL**: Employs SQL (Structured Query Language) for data modification and retrieval.
-- **NoSQL**: Offers various APIs (like the document and key-value store interfaces) for data operations; the use of structured query languages can vary across different NoSQL implementations.
+---
 
-- **SQL**: Often provides ACID (Atomicity, Consistency, Isolation, Durability) compliance to ensure data integrity.
-- **NoSQL**: Databases are oftentimes optimized for high performance and horizontal scalability, with potential trade-offs in consistency.
+## 4. SELECT Statement
 
-### Common NoSQL Database Types
+The **SELECT** statement gets data from a table.
 
-#### Document Stores
+### Basic Syntax:
+```sql
+SELECT column_name FROM table_name WHERE condition;
+```
 
-- **Example**: MongoDB, Couchbase
-- **Key Features**: Each record is a self-contained document, typically formatted as JSON. Relationship between documents is established through embedded documents or references.
-Example: Users and their blog posts could be encapsulated within a single document or linked via document references.
+### Example:
+```sql
+SELECT Name, Age 
+FROM Employee 
+WHERE Age > 25 
+ORDER BY Age;
+```
 
-#### Key-Value Stores
+### Common Clauses:
+- **WHERE** - Filter rows
+- **ORDER BY** - Sort results
+- **LIMIT** - Show only X rows
+- **GROUP BY** - Group similar data
+- **JOIN** - Combine data from multiple tables
 
-- **Example**: Redis, Amazon DynamoDB
-- **Key Features**: Data is stored as a collection of unique keys and their corresponding values. No inherent structure or schema is enforced, providing flexibility in data content.
-Example: Shopping cart items keyed by a user's ID.
+---
 
-#### Wide-Column Stores (Column Families)
+## 5. WHERE vs HAVING
 
-- **Example**: Apache Cassandra, HBase
-- **Key Features**: Data is grouped into column families, akin to tables in traditional databases. Each column family can possess a distinct set of columns, granting a high degree of schema flexibility.
-Example: User profiles, where certain users might have additional or unique attributes.
+| WHERE | HAVING |
+|-------|--------|
+| Filters **before** grouping | Filters **after** grouping |
+| Works with individual rows | Works with grouped data |
+| Used with any column | Used with aggregate functions |
+| Cannot use COUNT, SUM, AVG | Can use COUNT, SUM, AVG |
 
-#### Graph Databases
+### Example:
+```sql
+-- WHERE - filter before grouping
+SELECT Department, COUNT(*) as Count
+FROM Employee
+WHERE Age > 25          -- WHERE filters rows first
+GROUP BY Department
+HAVING COUNT(*) > 3;    -- HAVING filters groups second
+```
 
-- **Example**: Neo4j, JanusGraph
-- **Key Features**: Tailored for data with complex relationships. Data entities are represented as nodes, and relationships between them are visualized as edges.
-Example: A social media platform could ensure efficient friend connections management.
+---
 
-### Data Modeling Differences
+## 6. JOINs Explained
 
-- **SQL**: Normalization is employed to minimize data redundancies and update anomalies.
-- **NoSQL**: Data is often denormalized, packaging entities together to minimize the need for multiple queries.
+### INNER JOIN
+Shows only matching records from both tables.
+```sql
+SELECT * FROM Employee 
+INNER JOIN Department ON Employee.DeptID = Department.ID;
+```
 
-### Auto-Incrementing IDs
+### LEFT JOIN
+Shows all records from left table + matching records from right table.
+```sql
+SELECT * FROM Employee 
+LEFT JOIN Department ON Employee.DeptID = Department.ID;
+```
 
-- **SQL**: Often, each entry is assigned a unique auto-incrementing ID.
-- **NoSQL**: The generation of unique IDs can be driven by external systems or even specific to individual documents within a collection.
+### RIGHT JOIN
+Shows all records from right table + matching records from left table.
 
-### Handling Data Relationships
+### FULL OUTER JOIN
+Shows all records from both tables.
 
-- **SQL**: Relationships between different tables are established using keys (e.g., primary, foreign).
-- **NoSQL**: Relationships are handled either through embedded documents, referencing techniques, or as graph-like structures in dedicated graph databases.
+---
 
-### Transaction Support
+## 7. Aggregate Functions
 
-- **SQL**: Transactions (a series of operations that execute as a single unit) are standard.
-- **NoSQL**: The concept and features of transactions can be more varied based on the specific NoSQL implementation.
-
-### Data Consistency Levels
-
-- **SQL**: Traditionally ensures strong consistency across the database to maintain data integrity.
-- **NoSQL**: Offers various consistency models, ranging from strong consistency to eventual consistency. This flexibility enables performance optimizations in distributed environments.
-
-### Scalability
-
-- **SQL**: Typically scales vertically, i.e., by upgrading hardware.
-- **NoSQL**: Is often designed to scale horizontally, using commodity hardware across distributed systems.
-
-### Data Flexibility
-
-- **SQL**: Enforces a predefined, rigid schema, making it challenging to accommodate evolving data structures.
-- **NoSQL**: Supports dynamic, ad-hoc schema updates for maximum flexibility.
-
-### Data Integrity & Validation
-
-- **SQL**: Often relies on constraints and strict data types to ensure data integrity and validity.
-- **NoSQL**: Places greater emphasis on the application layer to manage data integrity and validation.
-<br>
-
-## 3. What are the different types of _SQL commands_?
-
-**SQL** commands fall into four primary categories: **Data Query Language** (DQL), **Data Definition Language** (DDL), **Data Manipulation Language** (DML), and **Data Control Language** (DCL).
-
-### Data Query Language (DQL)
-
-These commands focus on querying data within tables.
-
-#### Keywords and Examples:
-
-- **SELECT**: Retrieve data.
-- **FROM**: Identify the source table.
-- **WHERE**: Apply filtering conditions.
-- **GROUP BY**: Group results based on specified fields.
-- **HAVING**: Establish qualifying conditions for grouped data.
-- **ORDER BY**: Arrange data based on one or more fields.
-- **LIMIT**: Specify result count (sometimes replaces `SELECT TOP` for certain databases).
-- **JOIN**: Bring together related data from multiple tables.
-
-### Data Definition Language (DDL)
-
-DDL commands are for managing the structure of the database, including tables and constraints.
-
-#### Keywords and Examples:
-
-- **CREATE TABLE**: Generate new tables.
-- **ALTER TABLE**: Modify existing tables.
-  - **ADD**, **DROP**: Incorporate or remove elements like columns, constraints, or properties.
-- **CREATE INDEX**: Establish indexes to improve query performance.
-- **DROP INDEX**: Remove existing indexes.
-- **TRUNCATE TABLE**: Delete all rows from a table, but the table structure remains intact.
-- **DROP TABLE**: Delete tables from the database.
-
-### Data Manipulation Language (DML)
-
-These commands are useful for handling data within tables.
-
-#### Keywords and Examples:
-
-- **INSERT INTO**: Add new rows of data.
-  - **SELECT**: Copy data from another table or tables.
-- **UPDATE**: Modify existing data in a table.
-- **DELETE**: Remove rows of data from a table.
-
-### Data Control Language (DCL)
-
-DCL is all about managing the access and permissions to database objects.
-
-#### Keywords and Examples:
-
-- **GRANT**: Assign permission to specified users or roles for specific database objects.
-- **REVOKE**: Withdraw or remove these permissions previously granted.
-<br>
-
-## 4. Explain the purpose of the _SELECT_ statement.
-
-The **SELECT** statement in SQL is fundamental to data retrieval and manipulation within relational databases. Its primary role is to precisely choose, transform, and organize data per specific business requirements.
-
-### Key Components of the SELECT Statement
-
-The **SELECT** statement typically comprises the following elements:
-
-- **SELECT**: Identifies the columns or expressions to be included in the result set.
-- **FROM**: Specifies the table(s) from which the data should be retrieved.
-- **WHERE**: Introduces conditional statements to filter rows based on specific criteria.
-- **GROUP BY**: Aggregates data for summary or statistical reporting.
-- **HAVING**: Functions like **WHERE**, but operates on aggregated data.
-- **ORDER BY**: Defines the sort order for result sets.
-- **LIMIT** or **TOP**: Limits the number of rows returned.
-
-### Practical Applications of SELECT
-
-The robust design of the **SELECT** statement empowers data professionals across diverse functions, enabling:
-
-- **Data Exploration**: Gaining insights through filtered views or aggregated summaries.
-- **Data Transformation**: Creating new fields via operations such as concatenation or mathematical calculations.
-- **Data Validation**: Verifying data against defined criteria.
-- **Data Reporting**: Generating formatted outputs for business reporting needs.
-- **Data Consolidation**: Bringing together information from multiple tables or databases.
-- **Data Export**: Facilitating the transfer of query results to other systems or for data backup.
-
-Beyond these functions, proper utilization of the other components ensures efficiency and consistency working with relational databases.
-
-### SELECT Query Example
-
-Here is the SQL code:
+Used to calculate something on a group of rows.
 
 ```sql
-SELECT 
-    Orders.OrderID, 
-    Customers.CustomerName, 
-    Orders.OrderDate, 
-    OrderDetails.UnitPrice, 
-    OrderDetails.Quantity, 
-    Products.ProductName, 
-    Employees.LastName
-FROM 
-    ((Orders
-    INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID)
-    INNER JOIN Employees ON Orders.EmployeeID = Employees.EmployeeID)
-    INNER JOIN OrderDetails ON Orders.OrderID = OrderDetails.OrderID
+-- COUNT - how many rows
+SELECT COUNT(*) FROM Employee;
+
+-- SUM - total of a column
+SELECT SUM(Salary) FROM Employee;
+
+-- AVG - average of a column
+SELECT AVG(Salary) FROM Employee;
+
+-- MIN/MAX - lowest/highest value
+SELECT MIN(Salary), MAX(Salary) FROM Employee;
 ```
-<br>
 
-## 5. What is the difference between _WHERE_ and _HAVING_ clauses?
+---
 
-**WHERE** and **HAVING** clauses are both used in SQL queries to filter data, but they operate in distinct ways.
+## 8. GROUP BY
 
-### WHERE Clause
+Groups rows that have the same values. Used with aggregate functions.
 
-The `WHERE` clause is primarily used to filter records before they are grouped or aggregated. It's typically employed with non-aggregated fields or raw data.
+```sql
+-- Count employees per department
+SELECT Department, COUNT(*) as Count
+FROM Employee
+GROUP BY Department;
 
-### HAVING Clause
+-- Total salary per department
+SELECT Department, SUM(Salary) as Total
+FROM Employee
+GROUP BY Department;
+```
 
-Conversely, the `HAVING` clause filters data **after** the grouping step, often in conjunction with aggregate functions like `SUM` or `COUNT`. This makes it useful for setting group-level conditions.
-<br>
+---
+
+## 9. Keys in SQL
+
+### Primary Key
+- Unique identifier for each row
+- Cannot be NULL
+- Only one per table
+
+```sql
+CREATE TABLE Employee (
+    ID INT PRIMARY KEY,
+    Name VARCHAR(50)
+);
+```
+
+### Foreign Key
+- Links to another table's primary key
+- Creates relationships between tables
+
+```sql
+CREATE TABLE Employee (
+    ID INT PRIMARY KEY,
+    DeptID INT,
+    FOREIGN KEY (DeptID) REFERENCES Department(ID)
+);
+```
+
+---
+
+## 10. INDEX
+
+Speeds up search on a column. Like a book's index - faster to find information.
+
+```sql
+-- Create index
+CREATE INDEX idx_name ON Employee(Name);
+
+-- Drop index
+DROP INDEX idx_name;
+```
+
+**Trade-off**: Faster searches but slower inserts/updates.
+
+---
+
+## 11. Common Interview Questions
+
+### Q: What is ACID?
+**A**: Rules that ensure database transactions are reliable and safe. It's about making sure data doesn't get corrupted when multiple operations happen.
+
+#### Atomicity (All or Nothing)
+Means a transaction is "atomic" - it either completes fully or doesn't happen at all. There's no in-between state.
+
+**Example**: When you transfer $100 from Account A to Account B:
+- Step 1: Deduct $100 from Account A
+- Step 2: Add $100 to Account B
+
+Both steps must succeed. If Step 2 fails after Step 1 completes, the database rolls back and undoes Step 1. You won't lose money stuck in limbo.
+
+```sql
+BEGIN TRANSACTION;
+UPDATE Account SET Balance = Balance - 100 WHERE ID = 1;
+UPDATE Account SET Balance = Balance + 100 WHERE ID = 2;
+COMMIT;
+-- If any error occurs, ROLLBACK automatically
+```
+
+#### Consistency (Data Stays Valid)
+The database moves from one valid state to another valid state. All rules and constraints are enforced.
+
+**Example**: Say you have a rule: "Account balance cannot be negative"
+- If you try to withdraw $500 but only have $100, the transaction fails
+- The database rejects it because it would break the consistency rule
+- Data remains in a valid state
+
+```sql
+-- Constraint ensures data consistency
+CREATE TABLE Account (
+    ID INT PRIMARY KEY,
+    Balance DECIMAL(10, 2) NOT NULL CHECK (Balance >= 0)
+);
+
+-- This update will fail - violates constraint
+UPDATE Account SET Balance = -50 WHERE ID = 1;
+-- Database rejects it automatically
+```
+
+#### Isolation (Transactions Don't Interfere)
+When multiple transactions run at the same time, they don't mess with each other. Each transaction works as if it's alone.
+
+**Example**: Two people withdraw from the same account at the same time:
+- Without Isolation: Both might read Balance = $1000, both withdraw $500, result = $500 (WRONG, should be $0)
+- With Isolation: One transaction completes first (Balance = $500), then the other sees the updated balance and fails (can't withdraw $500 from $500)
+
+```
+Transaction 1:              Transaction 2:
+Read Balance ($1000)        Read Balance ($1000)
+Deduct $500 → $500         Deduct $500 → $500
+Write $500                  Write $500 ❌ WRONG!
+                            Should be $0
+
+With Isolation:
+Transaction 1 completes first
+Transaction 2 sees Balance = $500, safely processes
+```
+
+Different isolation levels control how much transactions can see:
+- **Dirty Read**: Can see uncommitted changes (risky)
+- **Read Committed**: Only see committed changes (safe)
+- **Repeatable Read**: Consistent reads within same transaction
+- **Serializable**: Complete isolation (slowest, safest)
+
+#### Durability (Data is Permanently Saved)
+Once a transaction is committed, it stays committed even if there's a power failure, crash, or disaster. The data is safely written to disk.
+
+**Example**: You buy something online and get an order confirmation. Even if the server crashes right after, your order exists in the database because it was committed to disk.
+
+```sql
+BEGIN TRANSACTION;
+INSERT INTO Orders VALUES (123, 'Laptop', '2024-03-08');
+INSERT INTO OrderDetails VALUES (456, 123, 1500);
+COMMIT;
+-- Data is now on disk. Even if power goes off, data survives
+```
+
+Without Durability: Data might only be in memory, and a crash = lost data.
+
+#### Real-World Example: Bank Transfer
+
+```sql
+-- Transfer $500 from Account A to Account B
+BEGIN TRANSACTION;
+
+-- Step 1: Deduct from Account A
+UPDATE accounts SET balance = balance - 500 WHERE account_id = 'A';
+
+-- Step 2: Add to Account B  
+UPDATE accounts SET balance = balance + 500 WHERE account_id = 'B';
+
+-- Commit everything
+COMMIT;
+
+-- ACID Guarantees:
+-- ✓ Atomicity: Both updates happen or neither happens
+-- ✓ Consistency: Balances stay valid (no negative, no lost money)
+-- ✓ Isolation: Other customers' transactions don't interfere
+-- ✓ Durability: Once committed, money transfer is permanent
+```
+
+**Why ACID Matters**: Without ACID, you could lose money, corrupt data, or have inconsistent information. Banks, hospitals, and financial systems depend on ACID for safety.
+
+### Q: What is Normalization?
+**A**: Organizing data to reduce duplicates and keep data consistent.
+- **1NF**: Remove repeating groups
+- **2NF**: Remove partial dependencies
+- **3NF**: Remove transitive dependencies
+
+### Q: What is a VIEW?
+**A**: A virtual table based on a SELECT query. Looks like a table but doesn't store data.
+
+```sql
+CREATE VIEW HighEarners AS
+SELECT * FROM Employee WHERE Salary > 50000;
+```
+
+### Q: What is a TRIGGER?
+**A**: Code that runs automatically when something happens (INSERT, UPDATE, DELETE).
+
+```sql
+CREATE TRIGGER update_timestamp
+AFTER UPDATE ON Employee
+FOR EACH ROW
+BEGIN
+    UPDATE Employee SET LastModified = NOW();
+END;
+```
+
+---
+
+## Quick Tips for Interview
+
+✅ **Know basic commands**: SELECT, INSERT, UPDATE, DELETE, CREATE, DROP
+✅ **Understand JOINs**: Most asked topic
+✅ **Know the difference**: WHERE vs HAVING, SQL vs NoSQL
+✅ **Practice queries**: Write simple and complex queries
+✅ **Explain clearly**: Use simple words, give examples
+✅ **Ask if unsure**: Better to ask than guess wrong
 
 ## 6. Define what a _JOIN_ is in SQL and list its types.
 
