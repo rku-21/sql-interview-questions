@@ -1,22 +1,13 @@
-# SQL Interview Guide - Concise Version
+# SQL Interview Notes - Quick Reference
 
 ## 1. What is SQL?
+**SQL** = Structured Query Language. Used to manage databases - retrieve, insert, update, delete data.
 
-**SQL** = Structured Query Language. It's used to talk to databases - to get data, add data, change data, and delete data.
-
-### Main Parts of SQL:
+### Main Parts:
 - **DDL** - Create/modify tables (CREATE, ALTER, DROP)
 - **DML** - Add/change/delete data (INSERT, UPDATE, DELETE)
-- **DQL** - Get data from database (SELECT)
-- **DCL** - Control who can access what (GRANT, REVOKE)
-
-### What You Do with SQL:
-- Retrieve data
-- Add new records
-- Update existing records
-- Delete records
-- Create tables
-- Set data rules and constraints
+- **DQL** - Get data (SELECT)
+- **DCL** - Control access (GRANT, REVOKE)
 
 ---
 
@@ -24,404 +15,494 @@
 
 | Feature | SQL | NoSQL |
 |---------|-----|-------|
-| **Data Type** | Structured data (tables) | Unstructured data (flexible) |
-| **Schema** | Fixed schema | No fixed schema |
-| **Query Language** | SQL | Different APIs (varies) |
-| **Consistency** | Strong (ACID) | Eventual consistency |
-| **Scaling** | Vertical (bigger servers) | Horizontal (more servers) |
-| **Examples** | MySQL, PostgreSQL | MongoDB, Redis, Cassandra |
+| Data Type | Structured (tables) | Unstructured (flexible) |
+| Schema | Fixed | Flexible |
+| Consistency | Strong (ACID) | Eventual |
+| Scaling | Vertical | Horizontal |
+| Examples | MySQL, PostgreSQL | MongoDB, Redis, Cassandra |
 
-### Strong Consistency vs Eventual Consistency
-
-#### Strong Consistency (SQL - ACID)
-Data is **immediately consistent** across all servers. When you write something, everyone sees the same thing right away.
-
-**Example**: Bank transfer - You withdraw $100, and instantly all ATMs show your new balance. No waiting.
-
-```sql
--- You update once, everyone sees it immediately
-UPDATE Account SET Balance = Balance - 100 WHERE ID = 1;
--- Everyone queries this account sees the new balance right now
-SELECT Balance FROM Account WHERE ID = 1;  -- All users see $900
-```
-
-✅ Best for: Banking, finance, critical data
-
-#### Eventual Consistency (NoSQL - BASE)
-Data is **copied to multiple servers in the background**. There's a small delay before everyone sees the update, but it "eventually" catches up.
-
-**Example**: Social media - You like a post. Your friend might see 100 likes while you see 101, but after a few seconds everyone sees 101.
-
-```
-Time 0: You click Like
-Server 1: Updates like count to 101 ✓
-Server 2: Still shows 100 (hasn't updated yet)
-Server 3: Still shows 100 (hasn't updated yet)
-
-Time 2 seconds later:
-Server 1: 101
-Server 2: 101
-Server 3: 101
--- Now all servers are "eventually consistent"
-```
-
-⚡ Best for: Social media, real-time feeds, high-traffic apps
-
-### Why This Trade-Off?
-
-**SQL (Strong Consistency)**:
-- Slower writes (waits for all servers to agree)
-- More reliable (no data conflicts)
-- Doesn't scale horizontally as well
-
-**NoSQL (Eventual Consistency)**:
-- Super fast writes (doesn't wait)
-- Better for scaling globally
-- Brief period where data might differ across locations
-
-### When to Use:
-- **SQL**: Banking, business apps, data with relationships, where accuracy is critical
-- **NoSQL**: Big data, real-time apps, social media, where speed matters more than instant accuracy
-
-### Modern Exception:
-Some modern databases blur the lines:
-- **MongoDB** - NoSQL with optional ACID transactions
-- **Google Spanner** - SQL-like but scales horizontally with strong consistency
-- **Cassandra** - NoSQL but you can tune consistency per request
+### Strong vs Eventual Consistency
+- **Strong (SQL)**: Everyone sees update immediately (like bank ATM)
+- **Eventual (NoSQL)**: Update spreads slowly across servers (like social media likes)
 
 ---
 
-## 3. Main SQL Commands
+## 3. Basic SQL Commands
 
-### Data Retrieval (DQL)
 ```sql
-SELECT * FROM table_name;
-SELECT column1, column2 FROM table WHERE condition;
-```
-
-### Create (DDL)
-```sql
-CREATE TABLE Employee (
-    ID INT PRIMARY KEY,
-    Name VARCHAR(50),
-    Age INT
-);
-```
-
-### Insert (DML)
-```sql
-INSERT INTO Employee VALUES (1, 'John', 25);
-```
-
-### Update (DML)
-```sql
-UPDATE Employee SET Age = 26 WHERE ID = 1;
-```
-
-### Delete (DML)
-```sql
-DELETE FROM Employee WHERE ID = 1;
-```
-
-### Drop Table (DDL)
-```sql
-DROP TABLE Employee;
+CREATE TABLE name (id INT PRIMARY KEY);  -- Create table
+INSERT INTO table VALUES (...);          -- Add data
+SELECT * FROM table WHERE condition;     -- Get data
+UPDATE table SET column = value;         -- Modify data
+DELETE FROM table WHERE id = 1;          -- Remove data
+DROP TABLE name;                         -- Delete table
+ALTER TABLE name ADD column;             -- Modify table structure
 ```
 
 ---
 
 ## 4. SELECT Statement
-
-The **SELECT** statement gets data from a table.
-
-### Basic Syntax:
-```sql
-SELECT column_name FROM table_name WHERE condition;
-```
-
-### Example:
-```sql
-SELECT Name, Age 
-FROM Employee 
-WHERE Age > 25 
-ORDER BY Age;
-```
-
-### Common Clauses:
+Gets data from database. Key clauses:
 - **WHERE** - Filter rows
 - **ORDER BY** - Sort results
 - **LIMIT** - Show only X rows
 - **GROUP BY** - Group similar data
-- **JOIN** - Combine data from multiple tables
+- **HAVING** - Filter after grouping
+- **JOIN** - Combine tables
 
 ---
 
 ## 5. WHERE vs HAVING
-
 | WHERE | HAVING |
 |-------|--------|
-| Filters **before** grouping | Filters **after** grouping |
-| Works with individual rows | Works with grouped data |
-| Used with any column | Used with aggregate functions |
-| Cannot use COUNT, SUM, AVG | Can use COUNT, SUM, AVG |
-
-### Example:
-```sql
--- WHERE - filter before grouping
-SELECT Department, COUNT(*) as Count
-FROM Employee
-WHERE Age > 25          -- WHERE filters rows first
-GROUP BY Department
-HAVING COUNT(*) > 3;    -- HAVING filters groups second
-```
+| Filters BEFORE grouping | Filters AFTER grouping |
+| Works on individual rows | Works on grouped data |
+| Can't use COUNT, SUM, AVG | Can use COUNT, SUM, AVG |
 
 ---
 
-## 6. JOINs Explained
-
-### INNER JOIN
-Shows only matching records from both tables.
-```sql
-SELECT * FROM Employee 
-INNER JOIN Department ON Employee.DeptID = Department.ID;
-```
-
-### LEFT JOIN
-Shows all records from left table + matching records from right table.
-```sql
-SELECT * FROM Employee 
-LEFT JOIN Department ON Employee.DeptID = Department.ID;
-```
-
-### RIGHT JOIN
-Shows all records from right table + matching records from left table.
-
-### FULL OUTER JOIN
-Shows all records from both tables.
+## 6. JOINs (Combining Tables)
+- **INNER JOIN** - Only matching records from both tables
+- **LEFT JOIN** - All from left table + matching from right
+- **RIGHT JOIN** - All from right table + matching from left
+- **FULL OUTER JOIN** - All records from both tables
 
 ---
 
 ## 7. Aggregate Functions
-
-Used to calculate something on a group of rows.
-
-```sql
--- COUNT - how many rows
-SELECT COUNT(*) FROM Employee;
-
--- SUM - total of a column
-SELECT SUM(Salary) FROM Employee;
-
--- AVG - average of a column
-SELECT AVG(Salary) FROM Employee;
-
--- MIN/MAX - lowest/highest value
-SELECT MIN(Salary), MAX(Salary) FROM Employee;
-```
+Count/calculate across groups:
+- **COUNT(*)** - How many rows
+- **SUM(column)** - Total
+- **AVG(column)** - Average
+- **MIN/MAX(column)** - Lowest/highest value
 
 ---
 
 ## 8. GROUP BY
-
-Groups rows that have the same values. Used with aggregate functions.
-
-```sql
--- Count employees per department
-SELECT Department, COUNT(*) as Count
-FROM Employee
-GROUP BY Department;
-
--- Total salary per department
-SELECT Department, SUM(Salary) as Total
-FROM Employee
-GROUP BY Department;
+Groups rows with same values. Used with aggregate functions.
+```
+Example: COUNT employees per department
 ```
 
 ---
 
 ## 9. Keys in SQL
-
-### Primary Key
-- Unique identifier for each row
-- Cannot be NULL
-- Only one per table
-
-```sql
-CREATE TABLE Employee (
-    ID INT PRIMARY KEY,
-    Name VARCHAR(50)
-);
-```
-
-### Foreign Key
-- Links to another table's primary key
-- Creates relationships between tables
-
-```sql
-CREATE TABLE Employee (
-    ID INT PRIMARY KEY,
-    DeptID INT,
-    FOREIGN KEY (DeptID) REFERENCES Department(ID)
-);
-```
+- **Primary Key** - Unique ID for each row (cannot be NULL, only 1 per table)
+- **Foreign Key** - Links to another table's primary key (creates relationships)
 
 ---
 
 ## 10. INDEX
+Makes searches faster (like book's index). Trade-off: faster reads but slower writes.
 
-Speeds up search on a column. Like a book's index - faster to find information.
+---
 
+## 11. ACID (Database Safety Rules)
+
+**A - Atomicity**: Transaction is all-or-nothing. Both steps succeed or both fail.
+- Example: Bank transfer - deduct AND add must both happen, not just one.
+
+**C - Consistency**: Data stays valid. All rules/constraints are enforced.
+- Example: Balance can't be negative.
+
+**I - Isolation**: Transactions don't interfere with each other.
+- Example: Two people withdrawing from same account at same time don't cause problems.
+
+**D - Durability**: Once saved, data stays saved even if power fails.
+- Example: Your order confirmation saved to disk permanently.
+
+---
+
+## 12. SQL Injection & Prevention
+
+**What is it?** Hacker inserts SQL code into input to manipulate database.
+
+**Example:** Username field: `admin' OR '1'='1` bypasses login.
+
+### How to Prevent (3 Ways):
+
+**1. Parameterized Queries** (BEST - Use this!)
+- Separate SQL code from user data using placeholders (?)
+- Database treats user input as data, not code
+- Even if hacker enters malicious text, it's just a string
+
+**2. Input Validation**
+- Check if input matches expected format (length, characters)
+- Extra security layer on top of parameterized queries
+- Don't rely on this alone
+
+**3. Use ORM**
+- ORM automatically uses parameterized queries
+- You don't write SQL manually, so no injection risk
+- (See section 13)
+
+---
+
+## 13. Normalization
+
+**What is it?** Organizing database into separate tables to reduce data redundancy and improve integrity.
+
+### Why Normalize?
+- Prevents data duplication (save storage)
+- Reduces update anomalies (fix data once, not multiple places)
+- Improves data integrity
+- Makes queries more efficient
+
+### The Normal Forms:
+
+**0NF (Unnormalized)** - All data in one messy table
+```
+ID | Name  | Invoice No | Item1 | Item2 | Item3
+1  | John  | INV001     | A,B,C | Q1,Q2,Q3 | P1,P2,P3
+(Multiple values in single cell - BAD!)
+```
+
+**1NF (First Normal Form)** - Atomic values (no repeating groups)
+```
+Customers Table:
+ID | Name
+1  | John
+
+Invoices Table:
+InvoiceNo | CustomerID | Date
+INV001    | 1          | 2024-01-01
+
+Items Table:
+InvoiceNo | ItemNo | Description | Qty
+INV001    | 1      | Product A   | 5
+INV001    | 2      | Product B   | 3
+(Each cell has single value)
+```
+
+**2NF (Second Normal Form)** - 1NF + All non-key columns depend on ENTIRE primary key
+```
+In Items Table:
+PRIMARY KEY = (InvoiceNo, ItemNo)
+Both Description and Quantity depend on both parts of key ✓
+```
+
+**3NF (Third Normal Form)** - 2NF + No transitive dependencies (non-key columns depend ONLY on primary key)
+```
+Invoices Table:
+InvoiceNo | CustomerID | InvoiceDate
+(No other column depends on CustomerID directly) ✓
+
+Bad example (needs to be split):
+InvoiceNo | CustomerID | CustomerName | CustomerCity
+(CustomerName depends on CustomerID, not InvoiceNo - needs separate table)
+```
+
+### Real Usage:
+- Most production databases target **3NF** (good balance)
+- Higher forms (BCNF, 4NF) for complex scenarios needing extreme integrity
+- Always start with 3NF, denormalize only if needed for performance
+
+---
+
+## 14. Denormalization
+
+**What is it?** Intentionally breaking normalization rules to improve performance. Trade-off: Speed vs. Data Consistency.
+
+### When to Use:
+- **Reporting/Analytics** - Complex reports spanning many tables (flatten to single table for faster queries)
+- **High-traffic sites** - E-commerce checkout (accept slight delay in sales figures update)
+- **Read-heavy apps** - More reads than writes (like search engines, news sites)
+- **Distributed systems** - NoSQL databases store redundant data across servers
+
+### How It Works:
+
+**Normalized (slow for reporting):**
+```
+Need 5 JOINs to get order details with customer + product + warehouse info
+SELECT ... FROM Orders 
+JOIN Customers ... JOIN Products ... JOIN Warehouses ... JOIN Pricing ...
+(5 joins = slower query)
+```
+
+**Denormalized (fast for reporting):**
+```
+Orders_Denormalized Table:
+OrderID | CustomerName | CustomerCity | ProductName | ProductCategory | 
+WarehouseName | Price | InventoryCount
+
+(All in one table = no joins = fast query)
+```
+
+### Trade-offs:
+- ✅ Faster reads, simpler queries
+- ❌ Slower writes (must update in multiple places)
+- ❌ More storage space (duplicate data)
+- ❌ Risk of inconsistency (data out of sync)
+
+### When NOT to Use:
+- Systems requiring strong data consistency (banking)
+- Write-heavy applications
+- When storage space is critical
+
+---
+
+## 15. Indexes
+
+**What is it?** Pointer/shortcut to find data faster. Like a book's index instead of reading every page.
+
+### How They Work:
+```
+Without index - scan 1 million rows:
+SELECT * FROM users WHERE email = 'john@example.com'
+(Checks EVERY row = 1 million lookups)
+
+With index - jump directly:
+(Database uses B-Tree to jump to "john@..." = ~20 lookups)
+```
+
+### Index Types:
+
+| Index | Use Case |
+|-------|----------|
+| **B-Tree** | Most common. Best for range queries (WHERE age > 25) |
+| **Hash** | Fast for exact matches (WHERE id = 5). Not good for ranges |
+| **Bitmap** | Columns with few unique values (gender: M/F) |
+| **R-Tree** | Geographic data (maps, GPS coordinates) |
+
+### When to Index:
+
+✅ **DO index:**
+- Primary keys (automatic)
+- Foreign keys (for JOINs)
+- Columns in WHERE clauses frequently queried
+- Columns used in ORDER BY or GROUP BY
+- High cardinality (many unique values)
+
+❌ **DON'T over-index:**
+- Too many indexes slow down INSERT/UPDATE/DELETE (must update all indexes)
+- Low cardinality columns (gender, status - only few values)
+- Small tables (whole table fits in memory)
+
+### Code Example:
 ```sql
 -- Create index
-CREATE INDEX idx_name ON Employee(Name);
+CREATE INDEX idx_user_email ON users(email);
 
--- Drop index
-DROP INDEX idx_name;
+-- Create composite index (multiple columns)
+CREATE INDEX idx_user_city_age ON users(city, age);
+
+-- View indexes on a table
+SHOW INDEXES FROM users;
+
+-- Drop index if not needed
+DROP INDEX idx_user_email ON users;
+
+-- Index usage in query
+EXPLAIN SELECT * FROM users WHERE email = 'john@example.com';
+(Shows if index was used)
 ```
 
-**Trade-off**: Faster searches but slower inserts/updates.
+### Best Practices:
+- Monitor index performance regularly
+- Remove unused indexes (save space and write performance)
+- Keep index count low (3-5 per table usually enough)
+- Test queries with EXPLAIN to verify index usage
 
 ---
 
-## 11. Common Interview Questions
+## 16. ORM (Object-Relational Mapping)
 
-### Q: What is ACID?
-**A**: Rules that ensure database transactions are reliable and safe. It's about making sure data doesn't get corrupted when multiple operations happen.
+**What is it?** Write database code using objects instead of raw SQL. ORM automatically converts objects to SQL.
 
-#### Atomicity (All or Nothing)
-Means a transaction is "atomic" - it either completes fully or doesn't happen at all. There's no in-between state.
+### Why Use ORM?
+- **Security** - Prevents SQL injection automatically (parameterized queries built-in)
+- **Less code** - 1 line vs 10 lines of SQL
+- **Database agnostic** - Switch from MySQL to PostgreSQL without code changes
+- **Type-safe** - Catch errors before runtime
+- **Faster development** - Focus on logic, not SQL
 
-**Example**: When you transfer $100 from Account A to Account B:
-- Step 1: Deduct $100 from Account A
-- Step 2: Add $100 to Account B
+### How It Works:
 
-Both steps must succeed. If Step 2 fails after Step 1 completes, the database rolls back and undoes Step 1. You won't lose money stuck in limbo.
+```javascript
+// Without ORM (Raw SQL)
+const query = "SELECT * FROM users WHERE id = ? AND status = ?";
+connection.query(query, [userId, 'active'], (err, results) => {
+    if (err) console.log(err);
+    const user = results[0];
+    console.log(user.name);
+});
 
-```sql
-BEGIN TRANSACTION;
-UPDATE Account SET Balance = Balance - 100 WHERE ID = 1;
-UPDATE Account SET Balance = Balance + 100 WHERE ID = 2;
-COMMIT;
--- If any error occurs, ROLLBACK automatically
+// With ORM (Sequelize)
+const user = await User.findOne({ where: { id: userId, status: 'active' } });
+console.log(user.name);
 ```
 
-#### Consistency (Data Stays Valid)
-The database moves from one valid state to another valid state. All rules and constraints are enforced.
+### Popular Node.js ORMs:
+- **Sequelize** - Best for MySQL/PostgreSQL, beginner-friendly
+- **Prisma** - Modern, auto-generates types, cleanest API
+- **TypeORM** - Good if using TypeScript
+- **Mongoose** - Specific for MongoDB
 
-**Example**: Say you have a rule: "Account balance cannot be negative"
-- If you try to withdraw $500 but only have $100, the transaction fails
-- The database rejects it because it would break the consistency rule
-- Data remains in a valid state
+### Code Example (Sequelize):
 
-```sql
--- Constraint ensures data consistency
-CREATE TABLE Account (
-    ID INT PRIMARY KEY,
-    Balance DECIMAL(10, 2) NOT NULL CHECK (Balance >= 0)
-);
+```javascript
+// Define model (like database blueprint)
+const User = sequelize.define('User', {
+    id: { type: DataTypes.INTEGER, primaryKey: true },
+    name: { type: DataTypes.STRING, allowNull: false },
+    email: { type: DataTypes.STRING, unique: true },
+    age: { type: DataTypes.INTEGER }
+});
 
--- This update will fail - violates constraint
-UPDATE Account SET Balance = -50 WHERE ID = 1;
--- Database rejects it automatically
+// Use in routes
+// CREATE
+app.post('/users', async (req, res) => {
+    const user = await User.create(req.body);
+    res.json(user);
+});
+
+// READ
+app.get('/users/:id', async (req, res) => {
+    const user = await User.findByPk(req.params.id);
+    res.json(user);
+});
+
+// UPDATE
+app.put('/users/:id', async (req, res) => {
+    const user = await User.findByPk(req.params.id);
+    await user.update(req.body);
+    res.json(user);
+});
+
+// DELETE
+app.delete('/users/:id', async (req, res) => {
+    await User.destroy({ where: { id: req.params.id } });
+    res.json({ message: 'Deleted' });
+});
 ```
 
-#### Isolation (Transactions Don't Interfere)
-When multiple transactions run at the same time, they don't mess with each other. Each transaction works as if it's alone.
+### ORM vs Raw SQL:
 
-**Example**: Two people withdraw from the same account at the same time:
-- Without Isolation: Both might read Balance = $1000, both withdraw $500, result = $500 (WRONG, should be $0)
-- With Isolation: One transaction completes first (Balance = $500), then the other sees the updated balance and fails (can't withdraw $500 from $500)
+| Scenario | ORM | Raw SQL |
+|----------|-----|---------|
+| Simple CRUD | ✅ Use ORM | ❌ Too verbose |
+| Complex JOINs (5+) | ⚠️ Works but slow | ✅ Better |
+| Maximum performance | ❌ Overhead | ✅ Faster |
+| MVP/Learning | ✅ Fast build | ❌ Slow |
+| Data integrity critical | ✅ Built-in | ⚠️ Manual |
 
+---
+
+## 17. SQL Injection Prevention
+
+**What is it?** Attacker inserts malicious SQL code through input fields to manipulate database.
+
+### Attack Example:
 ```
-Transaction 1:              Transaction 2:
-Read Balance ($1000)        Read Balance ($1000)
-Deduct $500 → $500         Deduct $500 → $500
-Write $500                  Write $500 ❌ WRONG!
-                            Should be $0
-
-With Isolation:
-Transaction 1 completes first
-Transaction 2 sees Balance = $500, safely processes
-```
-
-Different isolation levels control how much transactions can see:
-- **Dirty Read**: Can see uncommitted changes (risky)
-- **Read Committed**: Only see committed changes (safe)
-- **Repeatable Read**: Consistent reads within same transaction
-- **Serializable**: Complete isolation (slowest, safest)
-
-#### Durability (Data is Permanently Saved)
-Once a transaction is committed, it stays committed even if there's a power failure, crash, or disaster. The data is safely written to disk.
-
-**Example**: You buy something online and get an order confirmation. Even if the server crashes right after, your order exists in the database because it was committed to disk.
-
-```sql
-BEGIN TRANSACTION;
-INSERT INTO Orders VALUES (123, 'Laptop', '2024-03-08');
-INSERT INTO OrderDetails VALUES (456, 123, 1500);
-COMMIT;
--- Data is now on disk. Even if power goes off, data survives
+Username input: admin' OR '1'='1
+Query becomes: SELECT * FROM users WHERE username = 'admin' OR '1'='1'
+Result: Returns all users, bypassing password check!
 ```
 
-Without Durability: Data might only be in memory, and a crash = lost data.
+### Prevention Methods:
 
-#### Real-World Example: Bank Transfer
-
-```sql
--- Transfer $500 from Account A to Account B
-BEGIN TRANSACTION;
-
--- Step 1: Deduct from Account A
-UPDATE accounts SET balance = balance - 500 WHERE account_id = 'A';
-
--- Step 2: Add to Account B  
-UPDATE accounts SET balance = balance + 500 WHERE account_id = 'B';
-
--- Commit everything
-COMMIT;
-
--- ACID Guarantees:
--- ✓ Atomicity: Both updates happen or neither happens
--- ✓ Consistency: Balances stay valid (no negative, no lost money)
--- ✓ Isolation: Other customers' transactions don't interfere
--- ✓ Durability: Once committed, money transfer is permanent
+**1. Parameterized Queries (BEST - ALWAYS USE THIS)**
+```javascript
+// Placeholder (?) separates SQL from data
+const query = "SELECT * FROM users WHERE username = ? AND password = ?";
+connection.query(query, [username, password], (err, results) => {
+    // Safe! Even if username = "admin' OR '1'='1", it's treated as literal string
+});
 ```
 
-**Why ACID Matters**: Without ACID, you could lose money, corrupt data, or have inconsistent information. Banks, hospitals, and financial systems depend on ACID for safety.
-
-### Q: What is Normalization?
-**A**: Organizing data to reduce duplicates and keep data consistent.
-- **1NF**: Remove repeating groups
-- **2NF**: Remove partial dependencies
-- **3NF**: Remove transitive dependencies
-
-### Q: What is a VIEW?
-**A**: A virtual table based on a SELECT query. Looks like a table but doesn't store data.
-
-```sql
-CREATE VIEW HighEarners AS
-SELECT * FROM Employee WHERE Salary > 50000;
+**2. Input Validation (Extra layer)**
+```javascript
+// Validate before querying
+if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+    return res.json({ success: false, message: "Invalid username" });
+}
+if (password.length < 6) {
+    return res.json({ success: false, message: "Invalid password" });
+}
+// Then do parameterized query
 ```
 
-### Q: What is a TRIGGER?
-**A**: Code that runs automatically when something happens (INSERT, UPDATE, DELETE).
+**3. Use ORM (Easiest)**
+```javascript
+// ORM automatically parameterizes everything
+const user = await User.findOne({ where: { username, password } });
+// SQL injection impossible - ORM handles it
+```
 
-```sql
-CREATE TRIGGER update_timestamp
-AFTER UPDATE ON Employee
-FOR EACH ROW
-BEGIN
-    UPDATE Employee SET LastModified = NOW();
-END;
+### Why Parameterized Queries Work:
+```
+Database sees: 
+SQL: SELECT * FROM users WHERE username = ? AND password = ?
+Data: ['admin\' OR \'1\'=\'1', 'anything']
+
+Database KNOWS the second part is DATA, not SQL code
+So it looks for username EXACTLY matching that string (won't find it)
+Injection prevented!
+```
+
+### In Your Node.js Website:
+```javascript
+// Option 1: Parameterized queries (mysql2)
+connection.query("SELECT * FROM users WHERE id = ?", [userId], callback);
+
+// Option 2: ORM (Sequelize) - RECOMMENDED
+const user = await User.findByPk(userId);
+
+// NEVER do this:
+connection.query("SELECT * FROM users WHERE id = " + userId);  // DANGEROUS!
 ```
 
 ---
 
-## Quick Tips for Interview
+## Quick Interview Answers
 
-✅ **Know basic commands**: SELECT, INSERT, UPDATE, DELETE, CREATE, DROP
-✅ **Understand JOINs**: Most asked topic
-✅ **Know the difference**: WHERE vs HAVING, SQL vs NoSQL
-✅ **Practice queries**: Write simple and complex queries
-✅ **Explain clearly**: Use simple words, give examples
-✅ **Ask if unsure**: Better to ask than guess wrong
+**Q: What is SQL?**
+A: Language to manage databases. Used for CRUD operations, data integrity, and reporting.
+
+**Q: SQL vs NoSQL?**
+A: SQL is structured with strong consistency (ACID). NoSQL is flexible with eventual consistency. SQL scales vertically, NoSQL scales horizontally.
+
+**Q: What is ACID?**
+A: Rules for safe transactions. Atomicity (all or nothing), Consistency (valid data), Isolation (no interference), Durability (permanent).
+
+**Q: What is Normalization?**
+A: Organizing database into separate tables to reduce redundancy. Most databases aim for 3NF. Prevents data duplication and inconsistency.
+
+**Q: What is Denormalization?**
+A: Intentionally combining tables to improve performance (faster reads). Trade-off: More storage and risk of inconsistency. Used for reporting and analytics.
+
+**Q: What is an Index?**
+A: Shortcut to find data faster (like book's index). Makes SELECT queries faster but slows down INSERT/UPDATE/DELETE. Use on columns frequently searched.
+
+**Q: What is SQL Injection?**
+A: Hacker inserts SQL code through input to manipulate database. Prevent with parameterized queries, input validation, or ORM.
+
+**Q: What is ORM?**
+A: Write database operations using objects instead of SQL. ORM converts to SQL automatically. Cleaner, safer, prevents SQL injection, faster to build.
+
+**Q: WHERE vs HAVING?**
+A: WHERE filters before grouping, HAVING filters after. Use HAVING with aggregate functions like COUNT or SUM.
+
+**Q: What is a foreign key?**
+A: Links to another table's primary key. Creates relationships between tables and enforces referential integrity.
+
+**Q: Difference between Primary Key and Index?**
+A: Primary key is unique ID for each row (only 1 per table). Index is a shortcut to find data faster (many per table). Primary key is constraint, index is performance tool.
+
+**Q: When would you denormalize?**
+A: For reporting/analytics (flatten tables for faster queries), high-traffic sites (accept slight inconsistency for speed), or read-heavy applications.
+
+**Q: How do you know if an index is helping?**
+A: Use EXPLAIN in SQL to see if index is used. Monitor query performance before/after adding index. Remove unused indexes.
+
+---
+
+## Interview Tips
+✅ Keep answers concise with examples
+✅ Explain real-world trade-offs (speed vs consistency, storage vs performance)
+✅ Master topics: ACID, SQL Injection, Normalization, ORM, JOINs
+✅ Know when to normalize vs denormalize
+✅ Understand indexes (when to use, when to avoid)
+✅ Can explain your design decisions clearly
+✅ Ask clarifying questions
+✅ Show you think about performance and security
